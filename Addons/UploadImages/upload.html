@@ -1,0 +1,87 @@
+<script type="text/javascript">
+    if(typeof swfobject == 'undefined'){ document.write('<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"><\/script>')};
+</script>
+<script type="text/javascript" src="__ADDONROOT__/js/uploadimages.js"></script>
+<link href="__ADDONROOT__/css/uploadimages.css" rel="stylesheet" type="text/css"/>
+
+<div class="controls">
+    <input type="file" id="upload_picture_{$addons_data.name}">
+    <if condition="$addons_data.status">
+        <input type="hidden" name="config[{$addons_data.name}]" id="cover_id_{$addons_data.name}" value="{$addons_data.value}"/>
+        <else/>
+        <input type="hidden" name="{$addons_data.name}" id="cover_id_{$addons_data.name}" value="{$addons_data.value}"/>
+    </if>
+    <div class="upload-img-box">
+        <notempty name="addons_data['value']">
+            <php> $mulimages = explode(",", $addons_data["value"]); </php>
+            <foreach name="mulimages" item="one">
+                <div class="upload-pre-item" val="{$one}">
+                    <img src="{$one|get_cover='path'}"  />
+                    <div class="close-layer hidden">删除</div>
+                </div>
+            </foreach>
+        </notempty>
+    </div>
+</div>
+<script type="text/javascript">
+    //上传图片
+    ///* 初始化上传插件 */
+    $("#upload_picture_{$addons_data.name}").uploadify({
+"height"          : 30,
+    "swf"             : "__STATIC__/uploadify/uploadify.swf",
+    "fileObjName"     : "download",
+    "buttonText"      : "上传图片",
+    "uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+    "width"           : 120,
+    'removeTimeout'   : 1,
+    'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+    "onUploadSuccess" : uploadPicture{$addons_data.name},
+    'onFallback' : function() {
+    alert('未检测到兼容版本的Flash.');
+    }
+});
+    function uploadPicture{$addons_data.name}(file, data){
+        var data = $.parseJSON(data);
+        var src = '';
+        if (data.status){
+    src = data.url || '__ROOT__' + data.path
+        $("#cover_id_{$addons_data.name}").parent().find('.upload-img-box').append(
+        '<div class="upload-pre-item" val="' + data.id + '"><img src="__ROOT__' + src + '" /><div class="close-layer hidden">删除</div></div>'
+        );
+        setPictureIds{$addons_data.name}();
+    } else {
+    updateAlert(data.info);
+        setTimeout(function(){
+        $('#top-alert').find('button').click();
+                $(that).removeClass('disabled').prop('disabled', false);
+        }, 1500);
+    }
+    }
+    function setPictureIds{$addons_data.name}(){
+        var ids = [];
+        $("#cover_id_{$addons_data.name}").parent().find('.upload-img-box').find('.upload-pre-item').each(function(){
+    ids.push($(this).attr('val'));
+    });
+        if (ids.length > 0)
+        $("#cover_id_{$addons_data.name}").val(ids.join(','));
+        else
+        $("#cover_id_{$addons_data.name}").val('');
+    }
+
+    $(function(){
+        $('div.upload-img-box').on('mousemove','div.upload-pre-item',function(){
+            $(this).find('.close-layer').removeClass("hidden");
+        });
+        $('div.upload-img-box').on('mouseout','div.upload-pre-item',function(){
+            $(this).find('.close-layer').addClass("hidden");
+        });
+        $('div.upload-img-box').on('click','div.close-layer',function(){
+            $(this).parent().remove();
+            setPictureIds{$addons_data.name}();
+            return false;
+        });
+    });
+
+    
+</script>
+

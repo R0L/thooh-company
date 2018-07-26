@@ -1,0 +1,64 @@
+<link rel="stylesheet" type="text/css" href="__ADDONROOT__/FlexSlider/flexslider.min.css" />
+<style type="text/css">
+    .flex-direction-nav li{line-height: 40px;}
+    .flexslider .slides > li {
+        overflow: hidden;
+        height:{$config.imgHeight}px;
+    }
+    .flex-control-nav{bottom: 10px;}
+</style>
+<script type="text/javascript" src="__ADDONROOT__/FlexSlider/jquery.flexslider-min.js"></script>
+<script type="text/javascript">
+$(function() {
+  $('.flexslider').flexslider({
+        animation : "{$config.second|default='fade'}", //图片变换方式：淡入淡出或者滑动
+        direction : "{$config.direction|default='horizontal'}",//图片设置为滑动式时的滑动方向：左右或者上下
+        selector : '.slides li',//滚动项目选择器
+        slideshowSpeed : "{$config.slideshowSpeed|default='3000'}",//自动播放速度毫秒
+        animationSpeed : '600', //滚动效果播放时长
+        animationDuration : '600', //动画淡入淡出效果延时
+        pausePlay : {$config.pausePlay|default='false'},//是否显示播放暂停按钮
+        itemWidth : "{$config.itemWidth|default='400'}",
+        itemHeight : "{$config.itemHeight|default='300'}",
+        directionNav : {$config.directionNav|default='false'},//是否显示左右控制按钮
+        prevText : "", //上一项的文字
+        nextText : "", //下一项的文字
+        pauseText : "", //暂停文字
+        playText : "", //播放文字
+        randomize : false, //是否随机幻灯片
+        slideToStart : "0", //初始化第一次显示图片位置
+        animationLoop : {$config.animationLoop|default='true'}, //是否循环滚动 循环播放
+        pauseOnHover : {$config.pauseOnHover|default='true'}, //鼠标糊上去是否暂停
+        manualControls : "{$config.manualControls|default='.js-slidernav i'}", //小圆点活数字标示 css 选择器
+        manualControlEvent : 'click', //自定义导航控制触发事件
+        touch: true
+  });
+});  
+</script>
+
+<if condition="$config.type eq 'baisc'">
+    <!-- Place somewhere in the <body> of your page -->
+    <div class="flexslider" style="width:{$config.imgWidth}px; height:{$config.imgHeight}px;">
+        <ul class="slides">
+            <foreach name="images" item="images" key="k">
+                <li><a href="{$urls[$k]}" target="_blank"><img src="{$images.path}" /></a></li>
+            </foreach>
+          <!-- items mirrored twice, total of 12 -->
+        </ul>
+      </div>
+<elseif  condition="$config.type eq 'word'"/>      
+    <div class="flexslider"  style="width:{$config.imgWidth}px; height:{$config.imgHeight}px;">
+	<ul class="slides">
+            <foreach name="images" item="images" key="k">
+                <?php $explode =  explode('|',$urls[$k]);  ?>
+                <li><a href="{$explode[0]}" target="_blank">
+                        <img src="{$images.path}" />
+                        <div style="position:absolute; top:{$explode[3]}px; right:{$explode[4]}px;">
+				<h4>{$explode[1]}</h4>
+				<p>{$explode[2]}</p>
+			</div>
+                    </a></li>
+            </foreach>
+	</ul>
+    </div>
+</if>
